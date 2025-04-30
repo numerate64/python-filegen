@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('--folders', type=int, default=10, help='Number of folders to create (default: 10)')
     parser.add_argument('--files-per-folder', type=int, default=10, help='Files per folder (default: 10)')
     parser.add_argument('--min-kb', type=int, default=4, help='Minimum file size in KB (default: 4)')
-    parser.add_argument('--max-mb', type=float, default=0.125, help='Maximum file size in MB (default: 0.125, i.e., 128KB)')
+    parser.add_argument('--max-kb', type=int, default=128, help='Maximum file size in KB (default: 128)')
     parser.add_argument('--parallelism', type=int, default=64, help='Number of parallel folder jobs (default: 64)')
     return parser.parse_args()
 
@@ -22,8 +22,8 @@ def parse_args():
 def random_string(length=12):
     return ''.join(random.choices(string.ascii_letters, k=length))
 
-def generate_file(file_path, min_kb, max_mb):
-    size_kb = random.randint(min_kb, int(max_mb * 1024))
+def generate_file(file_path, min_kb, max_kb):
+    size_kb = random.randint(min_kb, max_kb)
     try:
         with open(file_path, 'wb') as f:
             f.write(os.urandom(size_kb * 1024))
@@ -31,7 +31,7 @@ def generate_file(file_path, min_kb, max_mb):
     except Exception as e:
         return 0, f"Error writing {file_path}: {e}"
 
-def generate_folder(base_path, files_per_folder, min_kb, max_mb, folder_name=None, progress=None):
+def generate_folder(base_path, files_per_folder, min_kb, max_kb, folder_name=None, progress=None):
     if folder_name is None:
         folder_name = random_string(12)
     folder_path = os.path.join(base_path, folder_name)
@@ -50,7 +50,7 @@ def generate_folder(base_path, files_per_folder, min_kb, max_mb, folder_name=Non
         while file_name in existing_files:
             file_name = random_string(10) + '.txt'
         file_path = os.path.join(folder_path, file_name)
-        bytes_written, err = generate_file(file_path, min_kb, max_mb)
+        bytes_written, err = generate_file(file_path, min_kb, max_kb)
         total_bytes += bytes_written
         if err:
             error_count += 1
@@ -70,13 +70,13 @@ def main():
 Python File Generator
 
 Usage:
-  python generate_random_files.py [--folders <int>] [--files-per-folder <int>] [--min-kb <int>] [--max-mb <float>] [--parallelism <int>] [--help|-h]
+  python generate_random_files.py [--folders <int>] [--files-per-folder <int>] [--min-kb <int>] [--max-kb <int>] [--parallelism <int>] [--help|-h]
 
 Parameters:
   --folders           Number of folders to create (default: 10)
   --files-per-folder  Files per folder (default: 10)
   --min-kb            Minimum file size in KB (default: 4)
-  --max-mb            Maximum file size in MB (default: 0.125, i.e., 128KB)
+  --max-kb            Maximum file size in KB (default: 128)
   --parallelism       Number of parallel folder jobs (default: 64)
   --help, -h          Show this help message
 """)
@@ -96,13 +96,13 @@ Parameters:
         folder_names.add(random_string(12))
     folder_names = list(folder_names)[:args.folders]
 
-    print(f"Starting (resumable) generation of {args.folders} folders, each with {args.files_per_folder} files (sizes: {args.min_kb} KB to {args.max_mb} MB) using {args.parallelism} parallel jobs...")
+    print(f"Starting (resumable) generation of {args.folders} folders, each with {args.files_per_folder} files (sizes: {args.min_kb} KB to {args.max_kb} KB) using {args.parallelism} parallel jobs...")
     start = time.time()
     results = []
     errors = 0
     with ThreadPoolExecutor(max_workers=args.parallelism) as executor:
         with tqdm(total=args.folders, desc="Folders", unit="folder") as progress:
-            futures = [executor.submit(generate_folder, base_path, args.files_per_folder, args.min_kb, args.max_mb, folder_name, progress) for folder_name in folder_names]
+            futures = [executor.submit(generate_folder, base_path, args.files_per_folder, args.min_kb, args.max_kb, folder_name, progress) for folder_name in folder_names]
             for future in as_completed(futures):
                 files, bytes_written, error_count = future.result()
                 results.append((files, bytes_written))

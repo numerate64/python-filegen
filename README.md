@@ -15,12 +15,12 @@ This project contains a Python script to generate a specified number of folders,
    ```
    You can optionally specify parameters:
    ```bash
-   python generate_random_files.py --folders 10 --files-per-folder 10 --min-kb 4 --max-mb 0.125 --parallelism 64
+   python generate_random_files.py --folders 10 --files-per-folder 10 --min-kb 4 --max-kb 128 --parallelism 64
    ```
    - `--folders`: Number of folders to create (default: 10)
    - `--files-per-folder`: Files per folder (default: 10)
    - `--min-kb`: Minimum file size in KB (default: 4)
-   - `--max-mb`: Maximum file size in MB (default: 0.125, i.e., 128KB)
+   - `--max-kb`: Maximum file size in KB (default: 128)
    - `--parallelism`: Number of parallel folder jobs (default: 64)
    - `--help`, `-h`: Show help/usage information
 4. The generated folders and files will be in the `files` directory.
