@@ -11,10 +11,10 @@ import sys
 # --- Argument Parsing ---
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate random folders and files of varying sizes.")
-    parser.add_argument('--folders', type=int, default=224, help='Number of folders to create (default: 224)')
-    parser.add_argument('--files-per-folder', type=int, default=1000, help='Files per folder (default: 1000)')
+    parser.add_argument('--folders', type=int, default=10, help='Number of folders to create (default: 10)')
+    parser.add_argument('--files-per-folder', type=int, default=10, help='Files per folder (default: 10)')
     parser.add_argument('--min-kb', type=int, default=4, help='Minimum file size in KB (default: 4)')
-    parser.add_argument('--max-mb', type=int, default=128, help='Maximum file size in MB (default: 128)')
+    parser.add_argument('--max-mb', type=float, default=0.125, help='Maximum file size in MB (default: 0.125, i.e., 128KB)')
     parser.add_argument('--parallelism', type=int, default=64, help='Number of parallel folder jobs (default: 64)')
     return parser.parse_args()
 
@@ -23,7 +23,7 @@ def random_string(length=12):
     return ''.join(random.choices(string.ascii_letters, k=length))
 
 def generate_file(file_path, min_kb, max_mb):
-    size_kb = random.randint(min_kb, max_mb * 1024)
+    size_kb = random.randint(min_kb, int(max_mb * 1024))
     try:
         with open(file_path, 'wb') as f:
             f.write(os.urandom(size_kb * 1024))
@@ -65,6 +65,22 @@ def generate_folder(base_path, files_per_folder, min_kb, max_mb, folder_name=Non
 def main():
     init(autoreset=True)  # colorama
     args = parse_args()
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print("""
+Python File Generator
+
+Usage:
+  python generate_random_files.py [--folders <int>] [--files-per-folder <int>] [--min-kb <int>] [--max-mb <float>] [--parallelism <int>] [--help|-h]
+
+Parameters:
+  --folders           Number of folders to create (default: 10)
+  --files-per-folder  Files per folder (default: 10)
+  --min-kb            Minimum file size in KB (default: 4)
+  --max-mb            Maximum file size in MB (default: 0.125, i.e., 128KB)
+  --parallelism       Number of parallel folder jobs (default: 64)
+  --help, -h          Show this help message
+""")
+        sys.exit(0)
     base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files')
     try:
         os.makedirs(base_path, exist_ok=True)

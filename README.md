@@ -1,6 +1,6 @@
 # Python File Generator
 
-This project contains a Python script to generate a specified number of folders, each with a specified number of text files of random sizes between 4KB and 128MB. Each folder and file has a random name, and files are filled with random data.
+This project contains a Python script to generate a specified number of folders, each with a specified number of text files of random sizes between 4KB and 128KB. Each folder and file has a random name, and files are filled with random data.
 
 ## Usage
 
@@ -15,21 +15,29 @@ This project contains a Python script to generate a specified number of folders,
    ```
    You can optionally specify parameters:
    ```bash
-   python generate_random_files.py --folders 224 --files-per-folder 1000 --min-kb 4 --max-mb 128 --parallelism 64
+   python generate_random_files.py --folders 10 --files-per-folder 10 --min-kb 4 --max-mb 0.125 --parallelism 64
    ```
-   - `--folders`: Number of folders to create (default: 224)
-   - `--files-per-folder`: Files per folder (default: 1000)
+   - `--folders`: Number of folders to create (default: 10)
+   - `--files-per-folder`: Files per folder (default: 10)
    - `--min-kb`: Minimum file size in KB (default: 4)
-   - `--max-mb`: Maximum file size in MB (default: 128)
+   - `--max-mb`: Maximum file size in MB (default: 0.125, i.e., 128KB)
    - `--parallelism`: Number of parallel folder jobs (default: 64)
+   - `--help`, `-h`: Show help/usage information
 4. The generated folders and files will be in the `files` directory.
+
+## Help / Usage
+
+You can view usage information at any time:
+```bash
+python generate_random_files.py --help
+```
 
 ## Output Details
 
 - A progress bar shows the folder creation progress in real time.
 - As the script runs, it prints a colored message for each folder when it completes, and any errors encountered are displayed in red.
   ```
-  [FolderName] Completed: 10 files (added 3), 540.19 MB written. Errors: 0
+  [FolderName] Completed: 10 files (added 3), 12.19 MB written. Errors: 0
   Error writing /path/to/file.txt: [error details]
   ```
 - At the end, a summary is displayed:
@@ -37,7 +45,7 @@ This project contains a Python script to generate a specified number of folders,
   Summary:
     Total folders: 10
     Total files: 100
-    Total size: 5.79 GB (5925.92 MB)
+    Total size: 1.19 GB (1219.92 MB)
     Time elapsed: 2.92 seconds
     Total errors: 0
   Done!
